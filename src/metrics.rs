@@ -1,4 +1,4 @@
-use sysinfo::{System, CpuRefreshKind, MemoryRefreshKind, RefreshKind, Disks};
+use sysinfo::{Disks, RefreshKind, System};
 
 #[derive(Debug, serde::Serialize)]
 pub struct Metrics {
@@ -10,11 +10,7 @@ pub struct Metrics {
 
 pub fn collect_metrics() -> Metrics {
     // Refresh CPU + memory
-    let mut sys = System::new_with_specifics(
-        RefreshKind::new()
-            .with_cpu(CpuRefreshKind::everything())
-            .with_memory(MemoryRefreshKind::everything()),
-    );
+    let mut sys = System::new_with_specifics(RefreshKind::everything());
     sys.refresh_all();
 
     // CPU usage
@@ -24,9 +20,7 @@ pub fn collect_metrics() -> Metrics {
         .sum::<f32>() / sys.cpus().len() as f32;
 
     // Disk usage via Disks API
-    let mut disks = Disks::new();
-    disks.refresh_list();
-    disks.refresh();
+    let disks = Disks::new_with_refreshed_list();
 
     let disk_usage: u64 = disks
         .iter()
