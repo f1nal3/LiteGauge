@@ -1,1 +1,4 @@
 /target
+
+# Ignore IntelliJ IDEA files
+/.idea
